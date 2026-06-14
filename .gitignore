@@ -10,7 +10,7 @@ __pycache__/
 # Jupyter checkpoints
 .ipynb_checkpoints/
 
-# Data files (VERY IMPORTANT for your dataset)
+# Data files
 data/raw/
 data/processed/
 
