@@ -14,7 +14,7 @@ import plotly.express as px
 # PAGE CONFIG
 # ==========================================
 st.set_page_config(
-    page_title="Predictive Maintenance Studio",
+    page_title="MainTenAI",
     page_icon="🛠️",
     layout="wide"
 )
@@ -250,7 +250,7 @@ st.markdown(
 # ==========================================
 @st.cache_resource
 def load_models():
-    return joblib.load("random_forest_model.pkl"), joblib.load("xgboost_model.pkl")
+    return joblib.load("models/random_forest_model.pkl"), joblib.load("models/xgboost_model.pkl")
 
 
 @st.cache_data
@@ -362,7 +362,7 @@ train_csv_path, test_csv_path = save_engineered_exports(train_df, test_df)
 st.markdown(
     """
     <div class="hero">
-        <h1>Predictive Maintenance Studio</h1>
+        <h1>MainTenAI</h1>
         <p>Elegant, real-time machine risk intelligence powered by Random Forest and XGBoost.</p>
     </div>
     """,
@@ -671,22 +671,6 @@ with analysis_tab:
     analysis_col3.markdown(f"<div class='metric-card'><div class='metric-label'>Failure Rate</div><div class='metric-value'>{dataset_df['Target'].mean():.2%}</div></div>", unsafe_allow_html=True)
     analysis_col4.markdown(f"<div class='metric-card'><div class='metric-label'>Avg Tool Wear</div><div class='metric-value'>{dataset_df['Tool wear [min]'].mean():.1f}</div></div>", unsafe_allow_html=True)
 
-    export_col1, export_col2 = st.columns(2)
-    with export_col1:
-        st.download_button(
-            "Download engineered training CSV",
-            data=train_df.to_csv(index=False).encode("utf-8"),
-            file_name="predictive_maintenance_train_engineered.csv",
-            mime="text/csv"
-        )
-    with export_col2:
-        st.download_button(
-            "Download engineered testing CSV",
-            data=test_df.to_csv(index=False).encode("utf-8"),
-            file_name="predictive_maintenance_test_engineered.csv",
-            mime="text/csv"
-        )
-
     split_col1, split_col2, split_col3 = st.columns(3)
     split_col1.markdown(f"<div class='metric-card'><div class='metric-label'>Train Rows</div><div class='metric-value'>{len(train_df):,}</div></div>", unsafe_allow_html=True)
     split_col2.markdown(f"<div class='metric-card'><div class='metric-label'>Test Rows</div><div class='metric-value'>{len(test_df):,}</div></div>", unsafe_allow_html=True)
@@ -796,29 +780,6 @@ with analysis_tab:
     ax.set_title("Engineered Features vs Target")
     render_mpl(fig)
 
-    st.markdown("### Feature Distributions by Failure")
-    dist_cols = st.columns(3)
-    distribution_features = ["Temp_Diff", "Torque_Wear", "Torque_RPM"]
-    for column, feature in zip(dist_cols, distribution_features):
-        with column:
-            fig, ax = make_mpl_figure((7, 4.8))
-            sns.histplot(
-                data=engineered_df,
-                x=feature,
-                hue=engineered_df["Target"].map({0: "No Failure", 1: "Failure"}),
-                bins=30,
-                element="step",
-                stat="density",
-                common_norm=False,
-                palette={"No Failure": "#0f766e", "Failure": "#f59e0b"},
-                ax=ax,
-            )
-            ax.set_title(f"{feature} Distribution")
-            ax.set_xlabel(feature)
-            ax.set_ylabel("Density")
-            ax.legend(title="Outcome", frameon=True, facecolor="white", edgecolor="#cbd5e1")
-            render_mpl(fig)
-
     st.markdown("### Failure Rate by Machine Type")
     failure_rate = dataset_df.groupby("Type")["Target"].mean().reindex(["H", "M", "L"])
     fig, ax = make_mpl_figure((8, 4.5))
@@ -869,4 +830,4 @@ with analysis_tab:
 # FOOTER
 # ==========================================
 st.divider()
-st.caption("Predictive Maintenance Studio | RF + XGBoost | Crafted for clarity and fast decisions")
+st.caption("MainTenAI | RF + XGBoost | Crafted for clarity and fast decisions")
